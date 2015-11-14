@@ -1,0 +1,272 @@
+#pragma once
+#include <iostream>
+
+using namespace std;
+
+template <class T>
+class BSTree
+{
+ public:
+    BSTree();
+
+    void insert(const T& elem);
+    bool remove(const T& elem);
+    
+    bool retrieve(T& elem);
+
+    void printInOrder();
+    void printPostOrder();
+    void printPreOrder();
+
+ private:
+    
+    struct Node
+    {
+	Node* p_left;
+	T data;
+	Node* p_right;
+    };
+
+    Node* p_root;
+    int numElements;    
+
+    void insertHelper(Node*& p_node, const T& elem);
+
+    void removeHelper(Node*& p_node, const T& elem, bool& found);
+    void deleteNode(Node*& p_node);
+    void getPredecessor(Node* p_node, T& elem);
+    
+    void retrieveHelper(Node* p_node, T& elem, bool& found);
+
+    void InOrderHelper(Node* p_node);
+    void PostOrderHelper(Node* p_node);
+    void PreOrderHelper(Node* p_node);
+};
+
+//ctor
+template <class T>
+BSTree <T> :: BSTree()
+{
+    //set root node to null
+    p_root = 0;
+    //set numElements
+    numElements = 0;
+
+}
+
+//insert
+template <class T>
+void BSTree <T> :: insert(const T& elem)
+{
+    //always start at root node,
+    //start recursive insert process
+    insertHelper(p_root, elem);
+}
+
+//insertHelper
+template <class T>
+void BSTree <T> :: insertHelper(Node*& p_node, const T& elem)
+{
+    //reach a null pointer?
+    if(p_node == 0)
+    {
+	//create a new node, assign to p_node
+	p_node = new Node;	    
+	//assign data to node
+	p_node->data = elem;
+	//set node left and right
+	p_node->p_left = 0;
+	p_node->p_right = 0;
+    }
+    else if(elem <= p_node->data)
+    {
+	//if data is less than or equal to current node data,
+	//recursively go left
+	insertHelper(p_node->p_left, elem);	
+    }
+    else
+    {
+	//if data is greater than current node data
+	//recursively go right
+	insertHelper(p_node->p_right, elem);
+    }
+
+}
+
+//remove
+template <class T>
+bool BSTree <T> :: remove(const T& elem)
+{
+    bool retVal = false;
+
+    //start at the root node
+    removeHelper(p_root, elem, retVal);
+
+    return retVal;
+}
+
+//removeHelper
+template <class T>
+void BSTree <T> :: removeHelper(Node*& p_node, const T& elem, bool& found)
+{
+    if(p_node == 0)
+    {
+	//node must not be in the tree
+	found = false;
+    }
+    else if(elem < p_node->data)
+    {
+	//need to keep searching left
+	removeHelper(p_node->p_left, elem, found);
+    }
+    else if(elem > p_node->data)
+    {
+	//need to keep searching right
+	removeHelper(p_node->p_right, elem, found);
+    }
+    else
+    {
+	//node has been found
+	deleteNode(p_node);
+	found = true;
+    }
+
+}
+
+//deleteNode
+template <class T>
+void BSTree <T> :: deleteNode(Node*& p_node)
+{
+
+
+}
+
+//getPredecessor
+template <class T>
+void BSTree <T> :: getPredecessor(Node* p_node, T& elem)
+{
+
+
+}
+
+//retrieve
+template <class T>
+bool BSTree <T> :: retrieve(T& elem)
+{
+    bool retVal = false;
+
+    //start at the root node
+    retrieveHelper(p_root, elem, retVal);
+
+    return retVal;
+}
+
+//retrieveHelper
+template <class T>
+void BSTree <T> :: retrieveHelper(Node* p_node, T& elem, bool& found)
+{
+    //base cases
+    if(p_node->data == elem)
+    {
+	//switch retVal
+	found = true;
+	//set elem to return to data
+	elem = p_node->data;
+    }
+    else if(p_node == 0)
+    {
+	//element was not found
+	found = false;
+    }
+    //general case
+    else
+    {
+	//if elem is less than current node data
+	if(p_node->data > elem)
+	{
+	    //go left
+	    retrieveHelper(p_node->p_left, elem, found);
+	}
+	else
+	{
+	    //go right
+	    retrieveHelper(p_node->p_right, elem, found);
+	}
+    }
+}
+
+//printInOrder
+template <class T>
+void BSTree <T> :: printInOrder()
+{
+    //always start at the root node
+    InOrderHelper(p_root);
+    cout << endl;
+}
+
+//InOrderHelper
+template <class T>
+void BSTree <T> :: InOrderHelper(Node* p_node)
+{
+    //p_node is null is base case
+    if(p_node != 0)
+    {
+	//look left
+	InOrderHelper(p_node->p_left);
+	//process node
+	cout << p_node->data << " ";
+	//look right
+	InOrderHelper(p_node->p_right);
+    }
+
+}
+
+//printPostOrder
+template <class T>
+void BSTree <T> :: printPostOrder()
+{
+    //start at root node
+    PostOrderHelper(p_root);
+    cout << endl;
+}
+
+//PostOrderHelper
+template <class T>
+void BSTree <T> :: PostOrderHelper(Node* p_node)
+{
+    //p_node is null is base case
+    if(p_node != 0)
+    {
+	//look left
+	PostOrderHelper(p_node->p_left);
+	//look right
+	PostOrderHelper(p_node->p_right);
+	//process node
+	cout << p_node->data << " ";
+    }
+}
+
+//printPreOrder
+template <class T>
+void BSTree <T> :: printPreOrder()
+{
+    //start at root node
+    PreOrderHelper(p_root);
+    cout << endl;
+}
+
+//PreOrderHelper
+template <class T>
+void BSTree <T> :: PreOrderHelper(Node* p_node)
+{
+    //base case, node is null
+    if(p_node != 0)
+    {
+	//process node
+	cout << p_node->data << " ";
+	//look left
+	PreOrderHelper(p_node->p_left);
+	//look right
+	PreOrderHelper(p_node->p_right);
+    }
+}
